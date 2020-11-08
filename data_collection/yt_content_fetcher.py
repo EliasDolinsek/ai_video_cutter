@@ -6,7 +6,7 @@ import pandas as pd
 from pytube import YouTube
 
 from audio_analyzer import analyze_audio
-from video_analyzer import find_scenes
+from video_analyzer import find_cuts
 
 DATA_STORAGE_PATH = "temp"
 videos_list = pd.read_csv("videos_list.csv", header=None)
@@ -53,16 +53,27 @@ for index, row in videos_list.iterrows():
 
     print("Analyzing audio...")
     output_path = os.path.join(current_path, f"data/{output_file_name}.csv")
-    # analyze_audio(audio_file, output_path) 
+    data = analyze_audio(audio_file)
     print("Finished analyzing audio")
 
     print("Analyzing video...")
-    scenes = find_scenes(video_file)
+    data["cut"] = [0 for i in range(len(data))]
+    scenes = find_cuts(video_file)
+
+    for scene_cut_timestamp in scenes:
+        for row_index in data.index:
+            if data["start_timestamp"][row_index] < scene_cut_timestamp < data["end_timestamp"][row_index]:
+                data.at[row_index, "cut"] = 1
+
+    base_path = os.path.abspath(output_path + "/../")
+    if not os.path.exists(base_path):
+        os.makedirs(base_path)
+
+    data.to_csv(output_path)
     print("Finished analyzing video")
 
     # delete temp files
     os.remove(video_file)
     os.remove(audio_file)
-
 
 print("Finished task!")
