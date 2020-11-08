@@ -1,10 +1,11 @@
 import os
+import pathlib
 import subprocess
 import pandas as pd
 from pytube import YouTube
 from audio_analyzer import analyze_audio
 
-DATA_STORAGE_PATH = "data"
+DATA_STORAGE_PATH = "temp"
 videos_list = pd.read_csv("videos_list.csv", header=None)
 
 
@@ -46,9 +47,12 @@ for index, row in videos_list.iterrows():
         print("An failure occurred during content fetching - skipping video!")
         continue
 
-    print(file)
     print("Analyzing audio...")
-    analyze_audio(audio_file, f"{output_file_name}.csv")
+
+    current_path = pathlib.Path(__file__).parent.absolute()
+    output_path = os.path.join(current_path, f"data/{output_file_name}.csv")
+
+    analyze_audio(audio_file, output_path) 
     print("Finished analyzing audio")
 
 print("Finished task!")

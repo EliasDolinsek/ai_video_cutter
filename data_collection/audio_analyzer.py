@@ -1,3 +1,4 @@
+import os
 from pyAudioAnalysis import audioBasicIO
 from pyAudioAnalysis import ShortTermFeatures
 import pandas as pd
@@ -25,7 +26,7 @@ def calculate_end_timestamps(frames_count):
 
     return timestamps
 
-def analyze_audio(file, output_file_name):
+def analyze_audio(file, output_file_path):
     [fs, x] = audioBasicIO.read_audio_file(file)
     x = audioBasicIO.stereo_to_mono(x)
 
@@ -40,5 +41,9 @@ def analyze_audio(file, output_file_name):
     df = pd.DataFrame(data=result, columns=f_names)
     df["start_timestamp"] = begin_timestamps[0]
     df["end_timestamp"] = end_timestamps[0]
-    
-    df.to_csv(output_file_name)
+   
+    base_path = os.path.abspath(output_file_path + "/../")
+    if not os.path.exists(base_path):
+        os.makedirs(base_path) 
+
+    df.to_csv(output_file_path)
