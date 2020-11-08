@@ -27,5 +27,5 @@ def find_scenes(video_path, threshold=30.0):
 
 scenes = find_scenes("test.mp4")
 file = open("result.txt", "w")
-file.write(scenes)
+file.write(str(scenes))
 file.close()

@@ -1,9 +1,12 @@
 import os
 import pathlib
 import subprocess
+
 import pandas as pd
 from pytube import YouTube
+
 from audio_analyzer import analyze_audio
+from video_analyzer import find_scenes
 
 DATA_STORAGE_PATH = "temp"
 videos_list = pd.read_csv("videos_list.csv", header=None)
@@ -36,28 +39,30 @@ def extract_audio(file, output_file_name):
 
 
 print("Starting data collection...")
+current_path = pathlib.Path(__file__).parent.absolute()
 for index, row in videos_list.iterrows():
     current_file = row.values[0]
     output_file_name = f"video_{index}"
 
     try:
-        file = download_video(current_file, output_file_name)
-        audio_file = extract_audio(file, output_file_name)
+        video_file = download_video(current_file, output_file_name)
+        audio_file = extract_audio(video_file, output_file_name)
     except:
         print("An failure occurred during content fetching - skipping video!")
         continue
 
     print("Analyzing audio...")
-
-    current_path = pathlib.Path(__file__).parent.absolute()
     output_path = os.path.join(current_path, f"data/{output_file_name}.csv")
-    
-    analyze_audio(audio_file, output_path) 
+    # analyze_audio(audio_file, output_path) 
+    print("Finished analyzing audio")
+
+    print("Analyzing video...")
+    scenes = find_scenes(video_file)
+    print("Finished analyzing video")
 
     # delete temp files
-    os.remove(file)
+    os.remove(video_file)
     os.remove(audio_file)
 
-    print("Finished analyzing audio")
 
 print("Finished task!")
