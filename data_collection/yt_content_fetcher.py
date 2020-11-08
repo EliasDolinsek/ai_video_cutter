@@ -48,7 +48,7 @@ for index, row in videos_list.iterrows():
 
     print(file)
     print("Analyzing audio...")
-    analyze_audio(audio_file)
+    analyze_audio(audio_file, f"{output_file_name}.csv")
     print("Finished analyzing audio")
 
 print("Finished task!")

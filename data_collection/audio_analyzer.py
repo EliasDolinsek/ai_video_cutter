@@ -25,7 +25,7 @@ def calculate_end_timestamps(frames_count):
 
     return timestamps
 
-def analyze_audio(file):
+def analyze_audio(file, output_file_name):
     [fs, x] = audioBasicIO.read_audio_file(file)
     x = audioBasicIO.stereo_to_mono(x)
 
@@ -41,7 +41,4 @@ def analyze_audio(file):
     df["start_timestamp"] = begin_timestamps[0]
     df["end_timestamp"] = end_timestamps[0]
     
-    df.to_csv("test.csv")
-
-
-analyze_audio("test.wav")
+    df.to_csv(output_file_name)
