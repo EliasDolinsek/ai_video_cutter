@@ -15,9 +15,7 @@ def calculate_step(frame_rate):
     return STEP_VALUE * frame_rate
 
 
-def calculate_timestamps(frames_count):
-    for i in range(frames_count):
-        print(i*STEP_VALUE)
+def calculate_begin_timestamps(frames_count):
     return np.array([[i*STEP_VALUE for i in range(frames_count)]])
 
 
@@ -30,7 +28,7 @@ def analyze_audio(file):
   
     result = f.reshape(-1, f.shape[0])
 
-    begin_timestamps = calculate_timestamps(f.shape[1])
+    begin_timestamps = calculate_begin_timestamps(f.shape[1])
     df = pd.DataFrame(data=result, columns=f_names)
     df["start_timestamp"] = begin_timestamps[0]
     
