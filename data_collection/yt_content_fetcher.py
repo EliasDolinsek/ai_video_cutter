@@ -51,8 +51,13 @@ for index, row in videos_list.iterrows():
 
     current_path = pathlib.Path(__file__).parent.absolute()
     output_path = os.path.join(current_path, f"data/{output_file_name}.csv")
-
+    
     analyze_audio(audio_file, output_path) 
+
+    # delete temp files
+    os.remove(file)
+    os.remove(audio_file)
+
     print("Finished analyzing audio")
 
 print("Finished task!")
