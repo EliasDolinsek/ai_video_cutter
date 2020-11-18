@@ -49,15 +49,15 @@ def analyze_audio(file):
 
 
 def find_cuts(audio_analysis):
-    cuts_start_timestamp = []
-    cuts_end_timestamp = []
+    # Drop start and end timestamps
+    cuts_start_timestamp = audio_analysis.drop("start_timestamp", axis=1)
+    cuts_end_timestamp = audio_analysis.drop("end_timestamp", axis=1)
 
-
+    # Load tf model
     model = tf.keras.models.load_model("model.h5")
+
+    # Create prediction for each timeframe
     for row in audio_analysis.iterrows():
-        del audio_analysis["start_timestamp"]
-        del audio_analysis["end_timestamp"]
-        
         model.predict(row)
         
     return audio_analysis[audio_analysis.cut == 1]
@@ -74,7 +74,7 @@ if __name__ == "__main__":
     output_file = args[3]
 
     audio_result = analyze_audio(audio_file)
-    print(audio_result.head())
+    print(find_cuts(audio_result))
     # print(filter_cuts(audio_result))
 
     
