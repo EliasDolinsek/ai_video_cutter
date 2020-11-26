@@ -1,11 +1,9 @@
-from sklearn import model_selection
-from sklearn.utils import shuffle
+import os
+import sys
 
-import os, sys
-import tensorflow as tf
 import keras as keras
 import pandas as pd
-import matplotlib.pyplot as plt
+import tensorflow as tf
 
 
 def load_data(folder):
@@ -28,7 +26,7 @@ def load_data(folder):
 
 
 def transform_df_data(df):
-    return (df["cut"], df.drop("cut", axis=1))
+    return df["cut"], df.drop("cut", axis=1)
 
 
 def create_model():
@@ -47,22 +45,20 @@ if __name__ == "__main__":
 
     data = load_data(folder)
 
-    y_data = []
-    x_data = []
+    y_data_list = []
+    x_data_list = []
 
     # Prepare data for tf
     for df in data:
-        y,x = transform_df_data(df)
+        y, x = transform_df_data(df)
 
-        y_data.append(y)
-        x_data.append(x)
+        y_data_list.append(y)
+        x_data_list.append(x)
 
-    
     model = create_model()
     model.compile(optimizer='adam',
                   loss='sparse_categorical_crossentropy',
                   metrics=['accuracy'])
-
 
     checkpoint_path = "training_1/cp.ckpt"
     checkpoint_dir = os.path.dirname(checkpoint_path)
@@ -73,10 +69,15 @@ if __name__ == "__main__":
                                                      verbose=1)
 
     # Train data
-    data_len = len(x_data)
-    for x_data, y_data, index in zip(x_data, y_data, range(data_len)):
-        print(f"\nTraining {index}/{data_len}")
-        model.fit(x_data, y_data, epochs=100, callbacks=[cp_callback], verbose=1)
+    data_len = len(x_data_list)
+    for x_data_list, y_data_list, index in zip(x_data_list, y_data_list, range(data_len)):
+        print(f"\nTraining content {index}/{data_len}")
+
+        x_data_values = x_data_list.values
+        x_data_values_len = len(x_data_values)
+        for x_data, y_data, time_frame_index in zip(x_data_values, y_data_list.values, range(x_data_values_len)):
+            print(f"Time frame {time_frame_index}/{x_data_values_len}")
+            model.fit(x_data_list, y_data_list, epochs=1, callbacks=[cp_callback], verbose=1)
 
     print("\nFinished training")
     model.save("model.h5")

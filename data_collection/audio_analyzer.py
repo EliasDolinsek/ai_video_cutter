@@ -19,6 +19,7 @@ def calculate_step(frame_rate):
 def calculate_begin_timestamps(frames_count):
     return np.array([[i*STEP_VALUE for i in range(frames_count)]])
 
+
 def calculate_end_timestamps(frames_count):
     timestamps = calculate_begin_timestamps(frames_count)
     for i in range(len(timestamps[0])):
@@ -26,13 +27,14 @@ def calculate_end_timestamps(frames_count):
 
     return timestamps
 
+
 def analyze_audio(file):
     [fs, x] = audioBasicIO.read_audio_file(file)
     x = audioBasicIO.stereo_to_mono(x)
 
     step_duration = calculate_step(fs)
     f, f_names = ShortTermFeatures.feature_extraction(x, fs, calculate_window(fs), step_duration)
-  
+
     result = f.reshape(-1, f.shape[0])
 
     begin_timestamps = calculate_begin_timestamps(f.shape[1])
@@ -41,5 +43,5 @@ def analyze_audio(file):
     df = pd.DataFrame(data=result, columns=f_names)
     df["start_timestamp"] = begin_timestamps[0]
     df["end_timestamp"] = end_timestamps[0]
-   
+
     return df

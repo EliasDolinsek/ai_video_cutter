@@ -18,7 +18,7 @@ def calculate_step(frame_rate):
 
 
 def calculate_begin_timestamps(frames_count):
-    return np.array([[i*STEP_VALUE for i in range(frames_count)]])
+    return np.array([[i * STEP_VALUE for i in range(frames_count)]])
 
 
 def calculate_end_timestamps(frames_count):
@@ -35,7 +35,7 @@ def analyze_audio(file):
 
     step_duration = calculate_step(fs)
     f, f_names = ShortTermFeatures.feature_extraction(x, fs, calculate_window(fs), step_duration)
-  
+
     result = f.reshape(-1, f.shape[0])
 
     begin_timestamps = calculate_begin_timestamps(f.shape[1])
@@ -44,25 +44,27 @@ def analyze_audio(file):
     df = pd.DataFrame(data=result, columns=f_names)
     df["start_timestamp"] = begin_timestamps[0]
     df["end_timestamp"] = end_timestamps[0]
-   
+
     return df
 
 
 def find_cuts(audio_analysis):
     # Drop start and end timestamps
-    cuts_start_timestamp = audio_analysis.drop("start_timestamp", axis=1)
-    cuts_end_timestamp = audio_analysis.drop("end_timestamp", axis=1)
+    df = audio_analysis.drop("start_timestamp", axis=1)
+    df = df.drop("end_timestamp", axis=1)
+    data = df.values
 
     # Load tf model
     model = tf.keras.models.load_model("model.h5")
+    print(model.summary())
 
-    # Create prediction for each timeframe
-    for row in audio_analysis.iterrows():
-        model.predict(row)
-        
-    return audio_analysis[audio_analysis.cut == 1]
+    # Create prediction for each time frame
+    for time_frame in data:
+        model.predict(time_frame)
 
-    
+    return df[df.cut == 1]
+
+
 if __name__ == "__main__":
     args = sys.argv
     if len(args) < 4:
@@ -75,6 +77,3 @@ if __name__ == "__main__":
 
     audio_result = analyze_audio(audio_file)
     print(find_cuts(audio_result))
-    # print(filter_cuts(audio_result))
-
-    

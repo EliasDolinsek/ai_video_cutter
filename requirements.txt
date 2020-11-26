@@ -50,3 +50,6 @@ tqdm==4.52.0
 urllib3==1.26.2
 Werkzeug==1.0.1
 wrapt==1.12.1
+
+Keras~=2.4.3
+scenedetect~=0.5.4.1
